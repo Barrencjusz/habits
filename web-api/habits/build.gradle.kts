@@ -33,11 +33,15 @@ dependencies {
   }
   testImplementation("org.springframework.cloud:spring-cloud-starter-contract-verifier")
   testImplementation("io.projectreactor:reactor-test")
+  testImplementation("org.testcontainers:mongodb")
 }
 
 dependencyManagement {
   imports {
     mavenBom("org.springframework.cloud:spring-cloud-dependencies:${property("springCloudVersion")}")
+  }
+  dependencies {
+    dependency("org.testcontainers:mongodb:1.14.3")
   }
 }
 

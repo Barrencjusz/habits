@@ -22,6 +22,8 @@ import org.springframework.data.mongodb.core.aggregation.Fields
 import org.springframework.data.mongodb.core.aggregation.FieldsExposingAggregationOperation
 import org.springframework.data.mongodb.core.findAll
 import org.springframework.data.mongodb.core.query.Criteria
+import org.springframework.data.mongodb.core.query.Query.query
+import org.springframework.data.mongodb.core.query.Update
 import org.springframework.data.mongodb.core.query.isEqualTo
 import org.springframework.stereotype.Repository
 import reactor.core.publisher.Flux
@@ -31,7 +33,17 @@ class MongoDBHabitsRepository(
     private val mongoOperations: ReactiveMongoOperations
 ) : HabitsRepository {
 
-  override fun insertOrUpdateHabit(habit: Habit) = mongoOperations.insert(habit)
+  override fun save(habit: Habit) = with(habit.toId()) {
+    mongoOperations.upsert(
+        query(
+            Criteria("_id").isEqualTo(this)
+        ),
+        Update.fromDocument(habit.toDocument())
+            .setOnInsert("_id", this)
+            .setOnInsert("_class", habit::class.qualifiedName),
+        "habit"
+    )
+  }
 
   override fun insertOrUpdateHabits(habits: List<Habit>) = mongoOperations.insertAll(habits)
 
@@ -39,19 +51,19 @@ class MongoDBHabitsRepository(
 
   override fun getHabitsHistoryForUser(userId: String): Flux<Map<*, *>> {
     val aggregation = newAggregation(
-        match(Criteria("userId").`is`(userId)),
-        sort(Sort.Direction.DESC, "day"),
-        group("type").push(
+        match(Criteria("_id.userId").`is`(userId)),
+        sort(Sort.Direction.DESC, "_id.date"),
+        group("_id.typeId").push(
             BasicDBObject()
-                .append("day", "\$day")
+                .append("date", "\$_id.date")
                 .append("success", "\$success")
         )
-            .`as`("days"),
+            .`as`("dates"),
         project()
             .andExclude("_id")
             .and("_id")
             .`as`("type")
-            .andInclude("days")
+            .andInclude("dates")
     )
 
     return mongoOperations.aggregate(aggregation, "habit", Map::class.java)

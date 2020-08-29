@@ -10,10 +10,6 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.context.TestConfiguration
 import org.springframework.context.annotation.Import
 import org.springframework.data.mongodb.core.ReactiveMongoOperations
-import org.springframework.data.mongodb.core.insert
-import org.springframework.data.mongodb.core.query.Criteria
-import org.springframework.data.mongodb.core.query.Query
-import org.springframework.data.mongodb.core.query.isEqualTo
 import org.springframework.test.context.ContextConfiguration
 import reactor.test.StepVerifier
 import java.time.LocalDate
@@ -59,7 +55,7 @@ class HabitInheritanceMappingTest(
           assertThat(it)
               .asInstanceOf(InstanceOfAssertFactories.type(WeightControlHabit::class.java))
               .extracting { it.weight }
-              .isEqualTo(88.9) // FIXME should probably use isCloseTo but the method is not available
+              .isEqualTo(88.9)
         }
         .expectComplete()
         .verify()

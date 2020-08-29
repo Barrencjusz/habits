@@ -27,7 +27,7 @@ class HabitsController(
   )
 
   @PostMapping
-  fun postHabit(@RequestBody habit: Habit) = habitsRepository.insertOrUpdateHabit(habit)
+  fun putHabit(@RequestBody habit: Habit) = habitsRepository.save(habit)
       .then()
 
   @PostMapping("batch")

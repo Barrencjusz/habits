@@ -5,11 +5,11 @@ import ReactDOM from "react-dom";
 
 type HabbitHistory = {
     type: string,
-    days: Array<Habit>
+    dates: Array<Habit>
 }
 
 type Habit = {
-    day: string,
+    date: string,
     success: boolean
 }
 
@@ -46,10 +46,10 @@ function Habits() {
                         </tr>
                         </thead>
                         <tbody>
-                        {habitHistory.days.map(day => (
+                        {habitHistory.dates.map(date => (
                             <tr>
-                                <td>{day.day}</td>
-                                <td>{day.success + ""}</td>
+                                <td>{date.date}</td>
+                                <td>{date.success + ""}</td>
                             </tr>
                         ))}
                         </tbody>

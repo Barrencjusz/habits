@@ -38,7 +38,7 @@ class HabitsController(
 
   @GetMapping("grouped")
   fun getGroupedHabits() = habitsRepository.getAllHabits()
-      .groupBy { it.type }
+      .groupBy { it.typeId }
       .flatMap { groupedHabits ->
         groupedHabits.collectList()
             .map { groupedHabits.key() to it }

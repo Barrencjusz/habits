@@ -13,6 +13,7 @@ import java.time.LocalTime
 import kotlin.reflect.KClass
 
 @JsonSubTypes(
+    JsonSubTypes.Type(HabitId::class),
     JsonSubTypes.Type(SuccessHabit::class, name = "success"),
     JsonSubTypes.Type(WeightControlHabit::class, name = "weight")
 )
@@ -21,7 +22,7 @@ interface Habit {
   val userId: String
   val typeId: String
   val date: LocalDate
-  val time: LocalTime?
+  val time: LocalTime? // FIXME in base?
 
   fun toId() = org.bson.Document()
       .apply {
@@ -31,6 +32,18 @@ interface Habit {
       }
 
   fun toDocument(): org.bson.Document
+}
+
+data class HabitId(
+    override val userId: String,
+    override val typeId: String,
+    override val date: LocalDate,
+    override val time: LocalTime?
+) : Habit {
+
+  override fun toDocument(): org.bson.Document {
+    TODO("Not yet implemented") // FIXME should be default somehow
+  }
 }
 
 data class SuccessHabit(
@@ -77,7 +90,7 @@ open class PresentPropertyPolymorphicDeserializer<T>(vc: Class<T>) : StdDeserial
         return deserialize(objectMapper, propertyName, `object`)
       }
     }
-    throw IllegalArgumentException("could not infer to which class to deserialize $`object`")
+    return deserialize(objectMapper, "", `object`)
   }
 
   @Throws(IOException::class)
@@ -85,7 +98,5 @@ open class PresentPropertyPolymorphicDeserializer<T>(vc: Class<T>) : StdDeserial
       objectMapper: ObjectMapper,
       propertyName: String,
       `object`: ObjectNode
-  ): T {
-    return objectMapper.treeToValue(`object`, propertyNameToType.getValue(propertyName).java) as T
-  }
+  ) = objectMapper.treeToValue(`object`, propertyNameToType.getValue(propertyName).java) as T
 }

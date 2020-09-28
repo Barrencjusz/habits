@@ -1,7 +1,6 @@
-import React, {useState, useEffect} from "react";
-import ReactDOM from "react-dom";
-
-// import "./styles.css";
+import React, {useEffect, useState} from "react";
+import Table from "react-bootstrap/Table"
+import Moment from "react-moment"
 
 type HabbitHistory = {
     type: string,
@@ -10,7 +9,8 @@ type HabbitHistory = {
 
 type Habit = {
     date: string,
-    success: boolean
+    success?: boolean
+    custom?: any
 }
 
 function Habits() {
@@ -38,7 +38,7 @@ function Habits() {
             {isLoading && <p>Wait I'm Loading Habits for you</p>}
             {
                 habbitHistories && habbitHistories.map(habitHistory => (
-                    <table>
+                    <Table key={habitHistory.type} striped bordered hover>
                         <thead>
                         <tr>
                             <th>Date</th>
@@ -47,13 +47,15 @@ function Habits() {
                         </thead>
                         <tbody>
                         {habitHistory.dates.map(date => (
-                            <tr>
-                                <td>{date.date}</td>
-                                <td>{date.success + ""}</td>
+                            <tr key={date.date}>
+                                <td><Moment format="YYYY/MM/DD">{date.date}</Moment></td>
+                                <td>{
+                                    date.success !== undefined ? (date.success + "") : date.custom?.weight
+                                }</td>
                             </tr>
                         ))}
                         </tbody>
-                    </table>
+                    </Table>
                 ))
             }
         </div>

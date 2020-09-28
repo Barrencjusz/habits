@@ -45,6 +45,13 @@ class MongoDBHabitsRepository(
     )
   }
 
+  override fun delete(habit: Habit) = mongoOperations.remove(
+      query(
+          Criteria("_id").isEqualTo(habit.toId())
+      ),
+      "habit"
+  )
+
   override fun insertOrUpdateHabits(habits: List<Habit>) = mongoOperations.insertAll(habits)
 
   override fun getAllHabits() = mongoOperations.findAll<Habit>()
@@ -57,6 +64,7 @@ class MongoDBHabitsRepository(
             BasicDBObject()
                 .append("date", "\$_id.date")
                 .append("success", "\$success")
+                .append("custom", "\$custom")
         )
             .`as`("dates"),
         project()

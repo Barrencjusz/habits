@@ -3,9 +3,11 @@ package com.habits.habits.web
 import com.habits.habits.Habit
 import com.habits.habits.repository.HabitsRepository
 import org.springframework.web.bind.annotation.CrossOrigin
+import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RestController
 
@@ -26,12 +28,15 @@ class HabitsController(
       "8" to "noGaming"
   )
 
-  @PostMapping
+  @PutMapping
   fun putHabit(@RequestBody habit: Habit) = habitsRepository.save(habit)
       .then()
 
   @PostMapping("batch")
   fun postHabits(@RequestBody habits: List<Habit>) = habitsRepository.insertOrUpdateHabits(habits)
+
+  @DeleteMapping
+  fun deleteHabit(@RequestBody habit: Habit) = habitsRepository.delete(habit)
 
   @GetMapping
   fun getAllHabits() = habitsRepository.getAllHabits()
